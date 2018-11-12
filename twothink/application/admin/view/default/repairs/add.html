@@ -1,0 +1,100 @@
+{extend name="public/base" /}
+
+{block name="body"}
+	<div class="main-title cf">
+		<h2>新增维修</h2>
+	</div>
+
+	<!-- 标签页导航 -->
+	<div class="tab-wrap">
+		<div class="tab-content">
+			<!-- 表单 -->
+			<form action="{:url()}" method="post" class="form-horizontal">
+				<div class="form-item">
+					<label class="item-label">姓名<span class="check-tips">（检修签名人员）</span></label>
+					<div class="controls">
+						<input type="text" class="text input-large" name="name" value="">
+					</div>
+				</div>
+
+				<div class="form-item">
+					<label class="item-label">电话号码<span class="check-tips">（电话号码）</span></label>
+					<div class="controls">
+						<input type="text" class="text input-large" name="tel" value="">
+					</div>
+				</div>
+
+
+				<div class="form-item">
+					<label class="item-label">地址信息<span class="check-tips">（检修地址信息）</span></label>
+					<div class="controls">
+						<input type="text" class="text input-large" name="address" value="">
+					</div>
+				</div>
+
+				<div class="form-item">
+					<label class="item-label">说明信息<span class="check-tips">（详细说明检修信息）</span></label>
+					<div class="controls">
+						<!--<input type="text" class="text input-large" name="info" value="">-->
+						<textarea class="text input-large" name="info"></textarea>
+					</div>
+				</div>
+
+				<div class="form-item">
+					<input type="hidden" name="id" value="{$info.id|default=''}">
+					<button class="btn submit-btn ajax-posts" id="submit" type="submit" target-form="form-horizontal">确 定</button>
+					<button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+				</div>
+			</form>
+		</div>
+	</div>
+{/block}
+{block name="script"}
+<script type="text/javascript" src="__PUBLIC__/static/jquery.dragsort-0.5.1.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+    //导航高亮
+    highlight_subnav('{:url('Model/index')}');
+
+    $(function(){
+    	showTab();
+    })
+//拖曳插件初始化
+$(function(){
+	$(".dragsort").dragsort({
+	     dragSelector:'li',
+	     placeHolderTemplate: '<li class="draging-place">&nbsp;</li>',
+	     dragBetween:true,	//允许拖动到任意地方
+	     dragEnd:function(){
+	     	updateVal();
+	     }
+	 });
+
+	$('#sortUl li b').click(function(){
+		$(this).parent().remove();
+		updateVal();
+	});
+
+	// 更新排序后的隐藏域的值
+	function updateVal() {
+		var sortVal = [];
+		var i = 1;
+		var val = '';
+	   	$('#base li').each(function(){
+	   		sortVal[i++] = $(this).find('em').text();
+	   	});
+	   	i = -1;
+	   	$('#extend li').each(function(){
+	   		sortVal[i--] = $(this).find('em').text();
+	   	});
+	   	//将排序数组拼接成json格式字符串
+	   	val += "[";
+	   	for (k in sortVal){
+	   		val += "\"" + sortVal[k] + "\"" + ":" + k + ",";
+	   	}
+	   	val = val.substr(0,val.length - 1) + "]";
+	    $("input[name='fields']").val(val);
+	}
+})
+</script>
+{/block}
+
